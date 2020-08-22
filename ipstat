@@ -1,0 +1,63 @@
+#!/bin/bash
+
+ping_info="ping_file"
+packet_info="packet_time"
+DEFAULT=10
+
+usage(){
+	echo "usage: ipstat <num_pings> <url/ipaddr>"
+	echo "       ipstat <url/ipaddr>"
+	echo "       ipstat --help"
+	echo ""
+	echo "when num_pings is not specified the"
+	echo "default is 10"
+}
+
+retieve_msg(){
+	echo Retieving Packet information:
+	echo ""
+}
+
+if [[ $1 = "--help" ]]
+then
+	usage
+	exit 1
+fi
+
+case $# in
+	1)
+		retieve_msg
+		ping -c $DEFAULT $1 > $ping_info
+		;;
+	2)
+		comp='^[0-9]+$'
+		if ! [[ $1 =~ $comp ]]
+		then
+			usage
+			exit 1
+		fi
+
+		retieve_msg
+		ping -c $1 $2 > $ping_info
+		;;
+	*)
+		usage
+		exit 1
+		;;
+esac
+
+echo Packet Transmit Receive Information:
+echo ""
+
+grep "transmitted" $ping_info | awk '{print $1 " Packets sent, " $4 " Packets received, with a loss of " $6}'
+echo ""
+
+grep "time=" $ping_info | awk '{print substr($8,6) " " $9}' > $packet_info
+
+echo Packet Statistics:
+echo ""
+
+awk '{tot += $1} END{print "Total time to send and receive packets: " tot " " $2}' $packet_info
+awk '{tot += $1} END{print "Average time to send and receive packets: " tot/NR " " $2}' $packet_info
+
+rm -f $ping_info $packet_info
