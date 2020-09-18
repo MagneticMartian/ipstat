@@ -46,6 +46,15 @@ case $# in
 		;;
 esac
 
+total_loss=`grep "transmitted" $ping_info | awk '{print $6}'`
+
+if [[ $total_loss = "100%" ]]
+then
+	echo ""
+	echo "All packets lost. Ending analysis."
+	exit 1
+fi
+
 echo Packet Transmit Receive Information:
 echo ""
 
