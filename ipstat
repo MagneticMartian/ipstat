@@ -46,6 +46,9 @@ case $# in
 		;;
 esac
 
+cat $ping_info | grep "icmp_seq=1 " | awk '{print "From ip address " $5}'
+echo ""
+
 total_loss=`grep "transmitted" $ping_info | awk '{print $6}'`
 
 if [[ $total_loss = "100%" ]]
