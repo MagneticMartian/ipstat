@@ -46,7 +46,7 @@ case $# in
 		;;
 esac
 
-grep "icmp_seq=1 " $ping_info | awk '{print "From ip address " $5}'
+grep "icmp_seq=1 " $ping_info | awk '{print "From ip address " $5}' | sed -e 's/(//g' -e 's/)//g'
 echo ""
 
 total_loss=`grep "transmitted" $ping_info | awk '{print $6}'`
